@@ -46,3 +46,11 @@ class ShortUrl(models.Model):
 class Payment(models.Model):
     status = models.CharField(max_length=20, default='initiated')
     paid_at = models.DateTimeField(null=True)
+
+
+class Wallet(models.Model):
+    balance = models.IntegerField(default=0)
+
+
+class Job(models.Model):
+    status = models.CharField(max_length=20, default='pending')

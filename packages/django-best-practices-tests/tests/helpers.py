@@ -5,7 +5,7 @@ import threading
 from contextlib import contextmanager
 
 from django.core.management import call_command
-from django.db import connection, connections
+from django.db import connection, connections, transaction
 
 
 def migrate(app, target):
@@ -95,6 +95,30 @@ class Session:
     def is_running(done, grace=0.3):
         """True when the submitted job is still blocked after a short grace period."""
         return not done['event'].wait(grace)
+
+    @contextmanager
+    def atomic_hold(self, func):
+        """Run func(connection) inside atomic() and keep that transaction open.
+
+        Yields func's return value while the session still holds whatever locks func
+        took; the transaction commits when the with block exits.
+        """
+        started, release, box = threading.Event(), threading.Event(), {}
+
+        def job(conn):
+            with transaction.atomic():
+                box['value'] = func(conn)
+                started.set()
+                release.wait(15)
+
+        handle = self.submit(job)
+        if not started.wait(10):
+            self.wait(handle, timeout=1)  # Re-raises the error func hit.
+        try:
+            yield box.get('value')
+        finally:
+            release.set()
+            self.wait(handle)
 
     def close(self):
         with self._cond:
