@@ -54,6 +54,11 @@ class Ticket(models.Model):
 Put first the column used with equality in most queries. Cardinality is a secondary
 concern; the index has to match the `WHERE` clauses you actually run.
 
+Many-to-many fields without a `through` model get a table that Django indexes on both
+foreign keys and constrains with a unique `(a, b)`: the index on `a` is redundant in every
+such table. Removing it needs an explicit `through` model (changing an existing field to
+one is a migration of its own), so it is usually worth doing only for large tables.
+
 **When not to apply:** if queries filter by `b` alone often, `b` needs its own index (or
 to lead another one). Do not rely on PostgreSQL 18's skip scan as a replacement.
 

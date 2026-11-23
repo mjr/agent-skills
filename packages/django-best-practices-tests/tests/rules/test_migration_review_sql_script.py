@@ -33,6 +33,11 @@ def labs_at_0001():
     migrate('fk_safe', '0002')
 
 
+def test_flags_a_recreated_foreign_key_when_turning_the_index_on():
+    # At 0002 (no index), going back to 0001 sets db_index=True again.
+    assert ('high', 'migration-fk-db-index-change') in rules(sqlmigrate('fk_naive', '0002', backwards=True))
+
+
 def test_flags_a_recreated_foreign_key(labs_at_0001):
     assert ('high', 'migration-fk-db-index-change') in rules(sqlmigrate('fk_naive', '0002'))
 
@@ -48,7 +53,7 @@ def test_flags_a_hidden_no_op_on_an_unmigrated_database():
         sql = sqlmigrate('fk_naive', '0002')
     finally:
         migrate('fk_naive', '0002')
-    assert ('medium', 'migration-review-sql') in rules(sql)
+    assert ('info', 'migration-review-sql') in rules(sql)
 
 
 def test_flags_non_atomic_migrations_that_mix_operations():

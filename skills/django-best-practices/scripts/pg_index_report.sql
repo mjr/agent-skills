@@ -16,6 +16,8 @@ WITH user_indexes AS (
         i.indisprimary,
         i.indisvalid,
         i.indkey,
+        i.indclass,
+        i.indcollation,
         i.indpred,
         i.indexprs,
         am.amname
@@ -40,8 +42,10 @@ WHERE s.idx_scan = 0 AND NOT u.indisunique AND NOT u.indisprimary
 
 UNION ALL
 
--- A plain B-tree whose columns are the leading columns of another B-tree on the same
--- table: the longer index serves the same lookups.
+-- A plain B-tree whose columns (with the same operator classes and collations) are the
+-- leading columns of another B-tree on the same table: the longer index serves the same
+-- lookups. Django's "_like" indexes (varchar_pattern_ops) differ in operator class and
+-- are not reported.
 SELECT
     'redundant',
     a.indrelid::regclass::text,
@@ -59,6 +63,8 @@ WHERE NOT a.indisunique
         b.indkey::text LIKE a.indkey::text || ' %'
         OR (b.indkey::text = a.indkey::text AND (b.indisunique OR b.indexrelid < a.indexrelid))
     )
+    AND (b.indclass::text LIKE a.indclass::text || ' %' OR b.indclass::text = a.indclass::text)
+    AND (b.indcollation::text LIKE a.indcollation::text || ' %' OR b.indcollation::text = a.indcollation::text)
 
 UNION ALL
 

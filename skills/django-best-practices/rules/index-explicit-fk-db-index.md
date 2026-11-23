@@ -44,9 +44,10 @@ class Ticket(models.Model):
     )
 ```
 
-Writing `db_index=True` changes nothing in the database (it is the default), so making
-existing foreign keys explicit generates no SQL. Changing an existing one to `False`
-does; see `migration-fk-db-index-change` before doing it.
+Writing `db_index=True` on a foreign key that already has the default changes nothing in
+the database, so making existing foreign keys explicit generates no SQL. Changing the
+value of an existing one, in either direction, re-creates the constraint; see
+`migration-fk-db-index-change` before doing it.
 
 **When not to apply:** nothing to avoid; the cost is one line per field. A system check
 can enforce it (see `detect-system-checks`).

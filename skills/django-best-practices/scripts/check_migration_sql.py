@@ -73,6 +73,7 @@ def check(sql):
         )
 
     dropped_constraints = set()
+    hidden = []
     for header, stmt in parsed:
         upper = stmt.upper()
         table = table_of(stmt)
@@ -80,15 +81,7 @@ def check(sql):
 
         if stmt == '(no-op)':
             if header and re.match(r'(Alter|Remove|Rename) ', header):
-                add(
-                    'medium',
-                    'migration-review-sql',
-                    'sqlmigrate printed no SQL for this operation. If the database it ran '
-                    'against is not at the previous migration, the real SQL can differ '
-                    '(for example, a foreign key that is dropped and re-created).',
-                    header,
-                    stmt,
-                )
+                hidden.append(header)
             continue
 
         m = re.search(r'DROP CONSTRAINT\s+' + NAME, stmt, re.I)
@@ -177,6 +170,18 @@ def check(sql):
                 header,
                 stmt,
             )
+
+    if hidden:
+        add(
+            'info',
+            'migration-review-sql',
+            f'{len(hidden)} operation(s) printed no SQL. That is expected for changes such as '
+            'verbose_name or choices, but sqlmigrate also prints no SQL for constraint and '
+            'index changes when the database it ran against is not at the previous '
+            'migration; if you expected SQL, re-run it against a migrated database.',
+            hidden[0],
+            '(no-op)',
+        )
 
     alters = [stmt for _, stmt in parsed if stmt.upper().startswith('ALTER TABLE')]
     if alters and 'LOCK_TIMEOUT' not in sql.upper():

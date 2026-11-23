@@ -12,10 +12,12 @@ tests: test_migration_fk_db_index_change.py
 
 ## Change a foreign key's index without re-creating the constraint
 
-Setting `db_index=False` on an existing `ForeignKey` (to drop a redundant index, or to
-replace it with a partial one) generates an `AlterField` that drops the whole foreign key
-constraint and adds it back. Adding it back locks the table and checks every row against
-the referenced table. Django 5.2, 6.0 and 6.1 all do this.
+Changing `db_index` on an existing `ForeignKey`, in either direction, generates an
+`AlterField` that drops the whole foreign key constraint and adds it back: turning it off
+(to drop a redundant index, or to replace it with a partial one) and turning it on (the
+index is then also built without `CONCURRENTLY`, blocking writes). Adding the constraint
+back locks the table and checks every row against the referenced table. Django 5.2, 6.0
+and 6.1 all do this.
 
 **Incorrect (the generated migration):**
 
@@ -72,6 +74,10 @@ Take the index name and the reverse SQL from `sqlmigrate` of the migration that 
 the field. `RemoveIndexConcurrently` cannot do this: it only handles indexes declared in
 `Meta.indexes`, not the one a `ForeignKey` creates implicitly. Confirm the state matches
 with `makemigrations --check`.
+
+To turn the index on, swap the statements: `CREATE INDEX CONCURRENTLY ...` as `sql` and
+`DROP INDEX CONCURRENTLY ...` as `reverse_sql`, with `db_index=True` in the state
+operation. Take the name Django would use from `sqlmigrate` of the generated migration.
 
 If the index is being replaced (for example by a partial index in `Meta.indexes`), put
 the `AddIndexConcurrently` before this operation; see `migration-create-before-drop`.

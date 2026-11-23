@@ -250,3 +250,20 @@ def test_report_finds_invalid_indexes():
     finally:
         with connection.cursor() as cursor:
             cursor.execute('DROP INDEX ticket_broken_ix')
+
+
+@pytest.mark.rule('index-audit-unused-and-duplicate')
+def test_report_does_not_call_like_indexes_redundant():
+    """Django adds a varchar_pattern_ops "_like" index next to unique and indexed CharFields."""
+    like = {i for i in index_names('catalog_shorturl') if i.endswith('_like')}
+    assert like, 'the lab model should have a _like index'
+    redundant = {i for f, t, i, _ in report() if f == 'redundant' and t == 'catalog_shorturl'}
+    assert not like & redundant
+
+
+@pytest.mark.rule('index-composite-leading-column')
+def test_auto_created_many_to_many_tables_carry_a_redundant_index():
+    """Django indexes both foreign keys of an implicit through table and adds a unique
+    (a, b) constraint, whose leading column makes the index on a redundant."""
+    findings = {(f, t) for f, t, _, _ in report()}
+    assert ('redundant', 'catalog_tag_products') in findings

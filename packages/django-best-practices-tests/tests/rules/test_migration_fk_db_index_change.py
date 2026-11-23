@@ -79,3 +79,11 @@ def test_sqlmigrate_hides_constraint_changes_on_an_unmigrated_database():
         assert '(no-op)' in sqlmigrate('fk_naive', '0002')
     finally:
         migrate('fk_naive', '0002')
+
+
+@pytest.mark.rule('migration-fk-db-index-change')
+def test_turning_the_index_on_also_recreates_the_constraint():
+    """db_index False -> True: the constraint is re-created and the index built without CONCURRENTLY."""
+    sql = sqlmigrate('fk_naive', '0002', backwards=True)  # 0002 -> 0001 turns the index back on.
+    assert 'DROP CONSTRAINT' in sql and 'ADD CONSTRAINT' in sql
+    assert 'CREATE INDEX' in sql and 'CONCURRENTLY' not in sql
