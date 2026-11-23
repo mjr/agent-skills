@@ -1,0 +1,104 @@
+"""tx-enqueue-in-transaction-db-queue and tx-on-commit-robust.
+
+With a queue stored in the same database, enqueueing inside the transaction makes the
+task commit or roll back together with the data. Deferring with on_commit leaves a gap:
+the data commits and the task can still be lost.
+"""
+
+import pytest
+from django.conf import settings
+from django.db import transaction
+
+from labs.catalog.models import Payment
+from tests.helpers import Session, execute
+
+pytestmark = [pytest.mark.django_db(transaction=True)]
+
+needs_tasks_db = pytest.mark.skipif(not settings.HAS_TASKS_DB, reason='django-tasks-db missing')
+needs_django_q = pytest.mark.skipif(not settings.HAS_DJANGO_Q, reason='django-q2 missing')
+
+
+class Boom(Exception):
+    pass
+
+
+def queued_tasks():
+    from django_tasks_db.models import DBTaskResult
+
+    return DBTaskResult.objects.count()
+
+
+def enqueue(payment):
+    from labs.catalog.tasks import mark_order_paid
+
+    mark_order_paid.enqueue(payment.pk)
+
+
+@needs_tasks_db
+@pytest.mark.rule('tx-enqueue-in-transaction-db-queue')
+def test_task_rolls_back_with_the_data():
+    with pytest.raises(Boom):
+        with transaction.atomic():
+            enqueue(Payment.objects.create(status='paid'))
+            raise Boom
+
+    assert Payment.objects.count() == 0
+    assert queued_tasks() == 0
+
+
+@needs_tasks_db
+@pytest.mark.rule('tx-enqueue-in-transaction-db-queue')
+def test_workers_only_see_the_task_after_commit():
+    with Session() as worker:
+        with transaction.atomic():
+            enqueue(Payment.objects.create(status='paid'))
+            seen = worker.run(execute('SELECT count(*) FROM django_tasks_database_dbtaskresult'))
+            assert seen == [(0,)], 'an uncommitted task must be invisible to workers'
+        seen = worker.run(execute('SELECT count(*) FROM django_tasks_database_dbtaskresult'))
+    assert seen == [(1,)]
+
+
+@needs_tasks_db
+@pytest.mark.rule('tx-enqueue-in-transaction-db-queue')
+def test_on_commit_can_lose_the_task_after_the_data_commits():
+    """A failure between the commit and the deferred enqueue loses the task for good.
+
+    A crash or a killed worker process has the same effect; a failing earlier callback
+    is just the simplest way to reproduce it in a test.
+    """
+    with pytest.raises(ZeroDivisionError):
+        with transaction.atomic():
+            payment = Payment.objects.create(status='paid')
+            transaction.on_commit(lambda: 1 / 0)
+            transaction.on_commit(lambda: enqueue(payment))
+
+    assert Payment.objects.filter(status='paid').count() == 1
+    assert queued_tasks() == 0
+
+
+@needs_tasks_db
+@pytest.mark.rule('tx-on-commit-robust')
+def test_robust_callback_does_not_stop_the_next_one():
+    with transaction.atomic():
+        payment = Payment.objects.create(status='paid')
+        transaction.on_commit(lambda: 1 / 0, robust=True)
+        transaction.on_commit(lambda: enqueue(payment))
+
+    assert queued_tasks() == 1
+
+
+@needs_django_q
+@pytest.mark.rule('tx-enqueue-in-transaction-db-queue')
+def test_django_q_orm_broker_is_transactional_too():
+    from django_q.models import OrmQ
+    from django_q.tasks import async_task
+
+    with pytest.raises(Boom):
+        with transaction.atomic():
+            async_task('labs.catalog.tasks.noop')
+            raise Boom
+    assert OrmQ.objects.count() == 0
+
+    with transaction.atomic():
+        async_task('labs.catalog.tasks.noop')
+    assert OrmQ.objects.count() == 1

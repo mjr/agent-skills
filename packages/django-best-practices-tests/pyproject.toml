@@ -1,0 +1,17 @@
+[project]
+name = "django-best-practices-tests"
+version = "0.1.0"
+description = "Executable checks for the claims made by the django-best-practices skill rules."
+requires-python = ">=3.12"
+# Django and the database driver are chosen per run by run_matrix.sh, so that the
+# same tests execute against every supported Django version.
+dependencies = []
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "testproject.settings"
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-ra --reuse-db"
+markers = [
+    "rule(id): the skill rule this test verifies",
+]

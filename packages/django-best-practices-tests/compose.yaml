@@ -1,0 +1,25 @@
+# PostgreSQL servers the executable rule tests run against.
+# Start one with: docker compose up -d pg16
+services:
+  pg16:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: dbp
+    ports:
+      - '55416:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 2s
+      retries: 30
+  pg18:
+    image: postgres:18
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: dbp
+    ports:
+      - '55418:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 2s
+      retries: 30
