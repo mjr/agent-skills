@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'labs.locklab',
     'labs.columnlab',
     'labs.nonatomic_lab',
+    'labs.indexlab',
 ]
 
 
