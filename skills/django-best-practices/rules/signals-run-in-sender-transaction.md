@@ -37,7 +37,7 @@ save fails.
 @receiver(post_save, sender=Payment, dispatch_uid='audit.payment_saved')
 def record_audit(sender, instance, **kwargs):
     AuditEntry.objects.create(action='payment_saved', object_id=instance.pk)
-    transaction.on_commit(partial(analytics.track, 'payment_saved', instance.pk), robust=True)
+    transaction.on_commit(lambda pk=instance.pk: analytics.track('payment_saved', pk), robust=True)
 ```
 
 Writes that must happen together with the sender's belong in the transaction; anything

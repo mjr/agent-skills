@@ -4,7 +4,7 @@ impact: MEDIUM
 risk: correctness
 django: ">=5.2"
 database: any
-tags: on_commit, robust, callbacks, errors
+tags: on_commit, robust, callbacks, errors, partial, qualname
 sources:
   - https://docs.djangoproject.com/en/stable/topics/db/transactions/#django.db.transaction.on_commit
 tests: test_tx_enqueue_in_transaction.py
@@ -34,12 +34,21 @@ sees an error page for an order that was placed.
 ```python
 with transaction.atomic():
     order.save()
-    transaction.on_commit(partial(send_receipt, order.pk), robust=True)
-    transaction.on_commit(partial(invalidate_order_cache, order.pk), robust=True)
+    transaction.on_commit(lambda pk=order.pk: send_receipt(pk), robust=True)
+    transaction.on_commit(lambda pk=order.pk: invalidate_order_cache(pk), robust=True)
 ```
 
 With `robust=True`, Django catches the exception, logs it with its traceback (logger
 `django.db.backends.base`) and moves on to the next callback.
+
+**Do not pass a `functools.partial` with `robust=True` on Django 5.2 and 6.0.** Django
+builds the log message with `func.__qualname__`, which a `partial` does not have. When
+the callback fails, an `AttributeError` escapes instead of being logged: the data is
+committed, the caller still gets a 500, and the later callbacks do not run, which is
+exactly what `robust=True` was meant to prevent. `captureOnCommitCallbacks(execute=True)`
+has the same bug, so a test that expects the failure to be logged errors. Django 6.1
+fixed both. Until then, bind the arguments with a default-argument lambda (as above) or
+a named function; both have a `__qualname__`.
 
 **When not to apply:** a robust callback that fails is only logged; nothing retries it.
 For work that must happen, enqueue a task instead (see
@@ -47,7 +56,9 @@ For work that must happen, enqueue a task instead (see
 the request and surface to the caller.
 
 **How to detect:** look for several `on_commit()` registrations in the same flow and for
-callbacks that call external services. Make sure the `django.db.backends.base` logger
-reaches your error tracker, or robust failures go unnoticed.
+callbacks that call external services. On Django 5.2 and 6.0, search for
+`on_commit(partial(` combined with `robust=True`. Make sure the
+`django.db.backends.base` logger reaches your error tracker, or robust failures go
+unnoticed.
 
 Reference: [transaction.on_commit()](https://docs.djangoproject.com/en/stable/topics/db/transactions/#django.db.transaction.on_commit)

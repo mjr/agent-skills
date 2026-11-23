@@ -5,6 +5,9 @@ task commit or roll back together with the data. Deferring with on_commit leaves
 the data commits and the task can still be lost.
 """
 
+from functools import partial
+
+import django
 import pytest
 from django.conf import settings
 from django.db import transaction
@@ -93,6 +96,59 @@ def test_robust_callback_error_is_logged_not_raised(caplog):
     with transaction.atomic():
         transaction.on_commit(lambda: 1 / 0, robust=True)
     assert any('on_commit' in r.getMessage() and r.exc_info for r in caplog.records)
+
+
+def failing_send(pk):
+    raise Boom(pk)
+
+
+@pytest.mark.rule('tx-on-commit-robust')
+@pytest.mark.skipif(django.VERSION >= (6, 1), reason='Fixed in Django 6.1')
+def test_robust_partial_raises_instead_of_logging_before_6_1():
+    """Django 5.2 and 6.0 log a robust failure with func.__qualname__, which partial lacks.
+
+    The AttributeError escapes after the commit: the data is saved, the caller gets a 500,
+    and the callbacks registered after it do not run.
+    """
+    ran = []
+    with pytest.raises(AttributeError, match='__qualname__'):
+        with transaction.atomic():
+            Payment.objects.create(status='paid')
+            transaction.on_commit(partial(failing_send, 1), robust=True)
+            transaction.on_commit(lambda: ran.append('next'), robust=True)
+    assert Payment.objects.count() == 1
+    assert ran == []
+
+
+@pytest.mark.rule('tx-on-commit-robust')
+@pytest.mark.skipif(django.VERSION < (6, 1), reason='Raises before Django 6.1')
+def test_robust_partial_is_logged_from_6_1(caplog):
+    with transaction.atomic():
+        transaction.on_commit(partial(failing_send, 1), robust=True)
+    assert any('on_commit' in r.getMessage() and r.exc_info for r in caplog.records)
+
+
+@pytest.mark.rule('tx-on-commit-robust')
+@pytest.mark.parametrize('in_transaction', [True, False])
+def test_robust_lambda_with_bound_argument_is_logged_on_every_version(caplog, in_transaction):
+    payment = Payment.objects.create(status='paid')
+    callback = lambda pk=payment.pk: failing_send(pk)  # noqa: E731
+    if in_transaction:
+        with transaction.atomic():
+            transaction.on_commit(callback, robust=True)
+    else:
+        transaction.on_commit(callback, robust=True)  # Runs immediately, still robust.
+    assert any('on_commit' in r.getMessage() and r.exc_info for r in caplog.records)
+
+
+@pytest.mark.rule('tx-on-commit-robust')
+@pytest.mark.skipif(django.VERSION >= (6, 1), reason='Fixed in Django 6.1')
+@pytest.mark.django_db(transaction=False)  # TestCase-style: callbacks are only captured.
+def test_capture_on_commit_callbacks_raises_the_same_way_before_6_1(django_capture_on_commit_callbacks):
+    """Tests hit the same bug, so a test that expects the failure to be logged errors."""
+    with pytest.raises(AttributeError, match='__qualname__'):
+        with django_capture_on_commit_callbacks(execute=True):
+            transaction.on_commit(partial(failing_send, 1), robust=True)
 
 
 @pytest.mark.rule('tx-on-commit-robust')

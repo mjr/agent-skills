@@ -2,7 +2,7 @@
 name: django-best-practices
 description: Django and PostgreSQL practices, each verified by executable tests on Django 5.2, 6.0 and 6.1. Covers concurrency and locking (select_for_update, F() expressions, IntegrityError races), transactions and side effects (atomic, on_commit, database-backed task queues), safe migrations (locks, concurrent indexes, foreign key index changes, NOT NULL, column defaults, deploy compatibility), signals, query performance (N+1, select_related, prefetch_related, fetch modes, annotations, Exists), indexes, Django REST Framework serializers and pagination, the admin on large tables, and database timeouts and connections. Use when writing, reviewing or refactoring Django models, migrations, querysets, transactions, signal receivers, serializers, admin classes or database settings.
 metadata:
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # Django Best Practices

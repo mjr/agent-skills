@@ -41,6 +41,9 @@ with transaction.atomic():
 
 `partial` evaluates `payment.pk` immediately. A default argument
 (`lambda pk=payment.pk: send_receipt(pk)`) works too but is easier to break in review.
+With `robust=True` on Django 5.2 and 6.0, use the default-argument lambda: a failing
+`partial` makes the robust handler raise `AttributeError` instead of logging (see
+`tx-on-commit-robust`).
 Pass primary keys or plain values rather than instances: an instance changed later in the
 transaction is seen in its final state by the callback.
 
