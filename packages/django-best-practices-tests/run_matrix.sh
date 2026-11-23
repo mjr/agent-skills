@@ -23,7 +23,7 @@ for version in $DJANGO_VERSIONS; do
     [ "$version" = "5.2" ] && tasks_db="django-tasks-db[compat]"
     uv run --quiet --no-project --python "$PYTHON" \
         --with "django~=$version.0" \
-        --with "psycopg[binary]" \
+        --with "psycopg[binary,pool]" \
         --with pytest --with pytest-django \
         --with "$tasks_db" --with django-q2 --with djangorestframework \
         pytest --create-db -p no:cacheprovider \

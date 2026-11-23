@@ -36,8 +36,7 @@ class WebhookEventAdmin(admin.ModelAdmin):
 ```
 
 The change form uses the same `get_queryset()`, so it loads the deferred field with one
-extra query for that single object and still shows it. If only the list should skip the
-column, check `request.resolver_match.url_name` or override `get_changelist` instead.
+extra query for that single object and still shows it.
 
 **When not to apply:** never defer a column that `list_display`, `__str__` or a callable
 column reads: that would add one query per row (see `query-only-defer`).
