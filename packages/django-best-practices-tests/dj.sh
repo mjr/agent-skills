@@ -11,5 +11,5 @@ export PG_PORT=${PG_PORT:-55416}
 exec uv run --quiet --no-project --python "${PYTHON:-3.13}" \
     --with "django~=$version.0" --with "psycopg[binary]" \
     --with pytest --with pytest-django \
-    --with "$tasks_db" --with django-q2 \
+    --with "$tasks_db" --with django-q2 --with djangorestframework \
     "$@"

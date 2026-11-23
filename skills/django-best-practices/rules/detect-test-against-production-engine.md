@@ -15,8 +15,8 @@ tests: test_detect.py
 SQLite is fast to set up for tests, but it is not PostgreSQL. On SQLite, Django silently
 drops the whole `FOR UPDATE` clause of `select_for_update()`, including `of`, `no_key`,
 `skip_locked` and `nowait` (no row locks, no error), and raises `NotSupportedError` for
-PostgreSQL features such as `distinct(*fields)` and the `django.contrib.postgres` fields,
-indexes and operations. Tests of locking, migrations and query plans on SQLite pass for
+PostgreSQL features such as `distinct(*fields)`; the `django.contrib.postgres` fields,
+indexes and functions do not work there at all. Tests of locking, migrations and query plans on SQLite pass for
 nothing.
 
 **Incorrect (test settings that swap the engine):**

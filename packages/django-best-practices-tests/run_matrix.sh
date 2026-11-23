@@ -25,7 +25,7 @@ for version in $DJANGO_VERSIONS; do
         --with "django~=$version.0" \
         --with "psycopg[binary]" \
         --with pytest --with pytest-django \
-        --with "$tasks_db" --with django-q2 \
+        --with "$tasks_db" --with django-q2 --with djangorestframework \
         pytest --create-db -p no:cacheprovider \
         --junitxml="reports/django-$version.xml" "$@" || status=1
 done

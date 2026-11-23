@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.postgres',
+    'rest_framework',
     'labs.catalog',
     'labs.fk_naive',
     'labs.fk_safe',
