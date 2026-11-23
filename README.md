@@ -11,7 +11,7 @@ Skills for AI coding agents.
 With [skills.sh](https://skills.sh):
 
 ```bash
-npx skills add <path-or-url-of-this-repo> --skill django-best-practices -g
+npx skills add https://github.com/mjr/agent-skills --skill django-best-practices -g
 ```
 
 or copy the folder for Claude Code:
