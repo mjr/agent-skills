@@ -2,7 +2,7 @@
 title: Put the check in the UPDATE instead of reading first
 impact: CRITICAL
 risk: correctness
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: conditional-update, f-expression, select_for_update, balance, stock
 sources:

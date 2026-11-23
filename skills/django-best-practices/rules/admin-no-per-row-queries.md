@@ -2,7 +2,7 @@
 title: Annotate admin columns instead of querying per row, and link instead of counting
 impact: HIGH
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: admin, list_display, annotate, count, format_html, admin-display
 sources:

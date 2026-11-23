@@ -2,7 +2,7 @@
 title: Join forward relations you will read with select_related
 impact: HIGH
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: n+1, select_related, foreignkey, onetoone
 sources:

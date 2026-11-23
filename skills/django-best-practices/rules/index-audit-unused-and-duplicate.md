@@ -2,7 +2,7 @@
 title: Audit indexes for unused, redundant, invalid and sparse ones
 impact: MEDIUM
 risk: cost
-django: ">=4.2"
+django: ">=5.2"
 database: postgresql
 tags: index, audit, pg_stat_user_indexes, redundant, invalid
 sources:

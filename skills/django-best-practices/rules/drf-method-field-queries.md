@@ -2,7 +2,7 @@
 title: Do not query inside SerializerMethodField; annotate and read the attribute
 impact: HIGH
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: drf, serializermethodfield, n+1, annotate
 sources:

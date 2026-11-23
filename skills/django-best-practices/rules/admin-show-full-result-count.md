@@ -2,7 +2,7 @@
 title: Turn off show_full_result_count on large tables
 impact: MEDIUM
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: admin, count, show_full_result_count, changelist
 sources:

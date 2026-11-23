@@ -2,7 +2,7 @@
 title: Lock the row when you fetch it, not after you already have an instance
 impact: HIGH
 risk: correctness
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: select_for_update, stale-instance, update_fields, classmethod
 sources:

@@ -2,7 +2,7 @@
 title: Change a foreign key's index without re-creating the constraint
 impact: CRITICAL
 risk: availability
-django: ">=4.2"
+django: ">=5.2"
 database: postgresql
 tags: foreign-key, db_index, separatedatabaseandstate, runsql, concurrently
 sources:

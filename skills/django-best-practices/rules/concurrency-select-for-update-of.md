@@ -2,7 +2,7 @@
 title: Name the tables to lock with select_for_update(of=...)
 impact: HIGH
 risk: availability
-django: ">=4.2"
+django: ">=5.2"
 database: any             # PostgreSQL, MySQL 8.0.1+, Oracle; NotSupportedError elsewhere
 tags: select_for_update, select_related, locking
 sources:

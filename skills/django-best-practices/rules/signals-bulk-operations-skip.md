@@ -2,7 +2,7 @@
 title: Do not rely on save signals for bulk operations
 impact: HIGH
 risk: correctness
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: signals, bulk_create, bulk_update, update, delete, post_save
 sources:

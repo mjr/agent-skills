@@ -2,7 +2,7 @@
 title: Load reverse and many-to-many relations with prefetch_related
 impact: HIGH
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: n+1, prefetch_related, manytomany, reverse-foreignkey
 sources:

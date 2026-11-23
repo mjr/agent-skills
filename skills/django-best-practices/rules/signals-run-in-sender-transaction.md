@@ -2,7 +2,7 @@
 title: Remember that receivers run inside the sender's transaction
 impact: HIGH
 risk: correctness
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: signals, post_save, transactions, rollback
 sources:

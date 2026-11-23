@@ -2,7 +2,7 @@
 title: Build and drop indexes concurrently on busy tables
 impact: HIGH
 risk: availability
-django: ">=4.2"
+django: ">=5.2"
 database: postgresql
 tags: index, concurrently, addindexconcurrently, invalid-index, locks
 sources:

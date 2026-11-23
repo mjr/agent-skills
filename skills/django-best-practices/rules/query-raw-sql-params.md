@@ -2,7 +2,7 @@
 title: Pass values to raw SQL as parameters, never by formatting strings
 impact: HIGH
 risk: correctness
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: raw-sql, sql-injection, params, rawsql, cursor
 sources:

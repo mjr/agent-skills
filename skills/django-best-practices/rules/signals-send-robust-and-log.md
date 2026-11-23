@@ -2,7 +2,7 @@
 title: Send custom signals with send_robust and watch its errors
 impact: HIGH
 risk: correctness
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: signals, send_robust, errors, decoupling, logging
 sources:

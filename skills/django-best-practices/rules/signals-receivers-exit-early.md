@@ -2,7 +2,7 @@
 title: Connect receivers to a sender and return early when the event is not theirs
 impact: MEDIUM
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: signals, post_save, sender, performance
 sources:

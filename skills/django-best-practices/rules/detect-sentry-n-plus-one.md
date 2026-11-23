@@ -2,7 +2,7 @@
 title: Know what an APM's N+1 detector reports and what it misses
 impact: LOW-MEDIUM
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: sentry, apm, n+1, monitoring
 sources:

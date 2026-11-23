@@ -2,7 +2,7 @@
 title: Know how a new column's default is applied before adding it to a big table
 impact: HIGH
 risk: availability
-django: ">=5.0"
+django: ">=5.2"
 database: postgresql
 tags: addfield, default, db_default, rewrite, uuid
 sources:

@@ -2,7 +2,7 @@
 title: Use no_key=True when the locked row's key does not change
 impact: HIGH
 risk: availability
-django: ">=4.2"
+django: ">=5.2"
 database: postgresql
 tags: select_for_update, no_key, foreign-key, locking
 sources:

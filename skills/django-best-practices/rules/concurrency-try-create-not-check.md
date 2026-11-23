@@ -2,7 +2,7 @@
 title: Insert and handle the conflict instead of checking first
 impact: CRITICAL
 risk: correctness
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: unique, integrityerror, race-condition, savepoint, get_or_create
 sources:

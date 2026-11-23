@@ -2,7 +2,7 @@
 title: Imperative title that states the rule
 impact: MEDIUM            # CRITICAL | HIGH | MEDIUM-HIGH | MEDIUM | LOW-MEDIUM | LOW
 risk: performance         # correctness | availability | performance | cost
-django: ">=4.2"           # oldest version where the Correct form works as shown
+django: ">=5.2"           # oldest supported version where the Correct form was verified
 database: any             # any | postgresql
 tags: tag-one, tag-two
 sources:

@@ -2,7 +2,7 @@
 title: Name signals after what happened, not what should happen next
 impact: LOW-MEDIUM
 risk: correctness
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: signals, naming, decoupling, design
 sources:

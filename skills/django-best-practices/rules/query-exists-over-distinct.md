@@ -2,7 +2,7 @@
 title: Filter on related rows with Exists, not with a join plus distinct()
 impact: MEDIUM
 risk: correctness
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: exists, distinct, duplicates, join, subquery
 sources:

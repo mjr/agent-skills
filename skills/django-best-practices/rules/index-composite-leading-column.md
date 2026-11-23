@@ -2,7 +2,7 @@
 title: Order composite index columns by how queries filter, and reuse the leading column
 impact: MEDIUM
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: postgresql
 tags: composite-index, unique-constraint, column-order, skip-scan, redundant-index
 sources:

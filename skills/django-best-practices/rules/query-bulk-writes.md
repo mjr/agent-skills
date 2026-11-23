@@ -2,7 +2,7 @@
 title: Write many rows with bulk_create and bulk_update
 impact: HIGH
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: bulk_create, bulk_update, upsert, update_conflicts
 sources:

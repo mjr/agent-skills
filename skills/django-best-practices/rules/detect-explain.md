@@ -2,7 +2,7 @@
 title: Check the plan with QuerySet.explain() before adding or dropping an index
 impact: MEDIUM
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: explain, analyze, buffers, query-plan, index
 sources:

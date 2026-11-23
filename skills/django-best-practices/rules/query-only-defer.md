@@ -2,7 +2,7 @@
 title: Skip heavy columns with only()/defer() or values(), and never read them later
 impact: MEDIUM
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: only, defer, values, deferred-fields, n+1
 sources:

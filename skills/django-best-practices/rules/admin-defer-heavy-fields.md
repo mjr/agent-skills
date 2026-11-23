@@ -2,7 +2,7 @@
 title: Defer large columns the changelist does not show
 impact: MEDIUM
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: admin, defer, get_queryset, jsonfield, textfield
 sources:

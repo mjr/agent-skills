@@ -2,7 +2,7 @@
 title: Make a populated column NOT NULL in steps
 impact: HIGH
 risk: availability
-django: ">=4.2"
+django: ">=5.2"
 database: postgresql
 tags: not-null, check-constraint, not-valid, backfill, alterfield
 sources:

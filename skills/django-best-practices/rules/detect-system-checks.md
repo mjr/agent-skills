@@ -2,7 +2,7 @@
 title: Turn conventions into system checks
 impact: MEDIUM
 risk: correctness
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: system-checks, conventions, ast, db_index, ci
 sources:

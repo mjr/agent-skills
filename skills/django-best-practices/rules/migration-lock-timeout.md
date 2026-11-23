@@ -2,7 +2,7 @@
 title: Set a lock_timeout for migrations
 impact: HIGH
 risk: availability
-django: ">=4.2"
+django: ">=5.2"
 database: postgresql
 tags: lock_timeout, alter-table, lock-queue, migrate
 sources:

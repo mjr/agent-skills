@@ -2,7 +2,7 @@
 title: Cover relations read by list_display callables with list_select_related
 impact: HIGH
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: admin, list_display, list_select_related, n+1
 sources:

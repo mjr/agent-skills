@@ -2,7 +2,7 @@
 title: Use lighter serialization on hot read-only endpoints
 impact: MEDIUM
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: drf, serializer, modelserializer, values, performance
 sources:

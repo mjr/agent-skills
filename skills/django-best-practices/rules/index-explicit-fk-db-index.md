@@ -2,7 +2,7 @@
 title: Set db_index explicitly on every ForeignKey and say why
 impact: HIGH
 risk: cost
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: foreign-key, db_index, index, review
 sources:

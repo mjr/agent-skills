@@ -2,7 +2,7 @@
 title: Give large changelists a default filter with a SimpleListFilter
 impact: LOW
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: admin, list_filter, simplelistfilter, default-filter
 sources:

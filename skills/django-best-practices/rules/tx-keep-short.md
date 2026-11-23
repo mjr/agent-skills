@@ -2,7 +2,7 @@
 title: Keep network calls and slow work out of transactions
 impact: HIGH
 risk: availability
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: atomic, locks, network, atomic_requests, long-transaction
 sources:

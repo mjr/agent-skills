@@ -2,7 +2,7 @@
 title: Run database tests on the same engine as production
 impact: HIGH
 risk: correctness
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: testing, sqlite, postgresql, select_for_update, ci
 sources:

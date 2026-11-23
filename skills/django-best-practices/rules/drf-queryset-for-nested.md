@@ -2,7 +2,7 @@
 title: Load what nested serializers read in the view's get_queryset
 impact: HIGH
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: drf, serializers, n+1, select_related, prefetch_related, get_queryset
 sources:

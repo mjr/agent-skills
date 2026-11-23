@@ -2,7 +2,7 @@
 title: Assert that query counts do not grow with the number of rows
 impact: HIGH
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: testing, assertnumqueries, n+1, captureQueriesContext
 sources:

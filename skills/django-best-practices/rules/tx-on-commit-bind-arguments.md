@@ -2,7 +2,7 @@
 title: Bind callback arguments when registering on_commit, not when it runs
 impact: MEDIUM
 risk: correctness
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: on_commit, lambda, late-binding, partial
 sources:

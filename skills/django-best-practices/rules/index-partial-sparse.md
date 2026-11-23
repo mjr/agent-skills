@@ -2,7 +2,7 @@
 title: Use partial indexes for columns that are mostly NULL or mostly one value
 impact: MEDIUM
 risk: cost
-django: ">=4.2"
+django: ">=5.2"
 database: postgresql
 tags: partial-index, null, condition, index-size
 sources:

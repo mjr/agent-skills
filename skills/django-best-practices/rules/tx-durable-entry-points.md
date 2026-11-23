@@ -2,7 +2,7 @@
 title: Mark transactions that must commit on exit with durable=True
 impact: MEDIUM
 risk: correctness
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: atomic, durable, entry-point, nested-transaction
 sources:

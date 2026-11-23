@@ -2,7 +2,7 @@
 title: Limit, count and test for existence in the database
 impact: MEDIUM
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: limit, slicing, count, exists, len, bool
 sources:

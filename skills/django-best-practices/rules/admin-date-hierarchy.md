@@ -2,7 +2,7 @@
 title: Index the date_hierarchy column with a plain B-tree, and mind the year links
 impact: LOW
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: admin, date_hierarchy, index, date_trunc
 sources:

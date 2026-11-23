@@ -2,7 +2,7 @@
 title: Run on_commit callbacks in tests explicitly
 impact: HIGH
 risk: correctness
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: testing, on_commit, captureOnCommitCallbacks, testcase
 sources:

@@ -2,7 +2,7 @@
 title: Shape prefetches with Prefetch(queryset=..., to_attr=...)
 impact: MEDIUM
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: prefetch, to_attr, select_related, filtered-prefetch
 sources:

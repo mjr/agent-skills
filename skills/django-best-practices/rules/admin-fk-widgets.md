@@ -2,7 +2,7 @@
 title: Use autocomplete_fields or raw_id_fields for foreign keys to large tables
 impact: HIGH
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: admin, autocomplete_fields, raw_id_fields, select, foreign-key
 sources:

@@ -2,7 +2,7 @@
 title: Declare uniqueness with named UniqueConstraints
 impact: MEDIUM
 risk: correctness
-django: ">=5.0"
+django: ">=5.2"
 database: any
 tags: uniqueconstraint, unique_together, partial-unique, nulls_distinct
 sources:

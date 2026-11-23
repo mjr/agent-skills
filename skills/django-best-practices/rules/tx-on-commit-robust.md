@@ -2,7 +2,7 @@
 title: Use on_commit(robust=True) for independent best-effort callbacks
 impact: MEDIUM
 risk: correctness
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: on_commit, robust, callbacks, errors
 sources:

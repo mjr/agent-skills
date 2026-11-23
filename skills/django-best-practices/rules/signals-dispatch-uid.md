@@ -2,7 +2,7 @@
 title: Pass dispatch_uid when a receiver can be connected more than once
 impact: MEDIUM
 risk: correctness
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: signals, dispatch_uid, duplicate-receivers, apps-ready
 sources:

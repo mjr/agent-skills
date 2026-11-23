@@ -2,7 +2,7 @@
 title: Reuse database connections with CONN_MAX_AGE or the connection pool
 impact: MEDIUM
 risk: performance
-django: ">=5.1"
+django: ">=5.2"
 database: postgresql
 tags: conn_max_age, conn_health_checks, pool, pgbouncer, connections
 sources:

@@ -2,7 +2,7 @@
 title: Mark fields that are never written as read-only
 impact: LOW-MEDIUM
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: drf, read_only_fields, validators, uniquevalidator
 sources:

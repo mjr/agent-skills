@@ -2,7 +2,7 @@
 title: Paginate every list, order it, and know what the page count costs
 impact: MEDIUM
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: drf, pagination, count, cursorpagination, ordering
 sources:

@@ -2,7 +2,7 @@
 title: Log SQL in development, knowing it only works with DEBUG on
 impact: MEDIUM
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: logging, debug, sql, django-debug-toolbar
 sources:

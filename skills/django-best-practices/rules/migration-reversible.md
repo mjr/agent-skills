@@ -2,7 +2,7 @@
 title: Give every RunSQL and RunPython a reverse operation
 impact: HIGH
 risk: availability
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: runsql, runpython, reverse, rollback, irreversible
 sources:

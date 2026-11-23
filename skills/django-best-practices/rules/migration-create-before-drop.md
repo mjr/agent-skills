@@ -2,7 +2,7 @@
 title: Create the replacement index before dropping the old one
 impact: HIGH
 risk: availability
-django: ">=4.2"
+django: ">=5.2"
 database: postgresql
 tags: index, partial-index, non-atomic, ordering
 sources:

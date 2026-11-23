@@ -2,7 +2,7 @@
 title: Remove and rename columns across releases, not in one
 impact: HIGH
 risk: availability
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: deploy, removefield, rename, expand-contract, zero-downtime
 sources:

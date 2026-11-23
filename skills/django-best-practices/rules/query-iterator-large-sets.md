@@ -2,7 +2,7 @@
 title: Stream large querysets with iterator(chunk_size=...)
 impact: MEDIUM
 risk: availability
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: iterator, chunk_size, memory, server-side-cursor, pgbouncer
 sources:

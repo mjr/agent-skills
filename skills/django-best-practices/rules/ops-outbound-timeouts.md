@@ -2,7 +2,7 @@
 title: Give every outbound HTTP call a timeout
 impact: HIGH
 risk: availability
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: timeout, http, requests, httpx, urllib, workers
 sources:

@@ -2,7 +2,7 @@
 title: Leaving your own atomic() block does not mean the data is committed
 impact: CRITICAL
 risk: correctness
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: atomic, savepoint, nested-transaction, on_commit, atomic_requests
 sources:

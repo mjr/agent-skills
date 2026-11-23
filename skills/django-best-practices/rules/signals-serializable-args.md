@@ -2,7 +2,7 @@
 title: Send primary keys and plain values in signals, not model instances
 impact: MEDIUM
 risk: correctness
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: signals, arguments, tasks, serialization
 sources:

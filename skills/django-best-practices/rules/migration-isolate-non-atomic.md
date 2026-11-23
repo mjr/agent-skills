@@ -2,7 +2,7 @@
 title: Put non-atomic operations in a migration of their own
 impact: HIGH
 risk: availability
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: atomic, non-atomic, migration, partial-failure
 sources:

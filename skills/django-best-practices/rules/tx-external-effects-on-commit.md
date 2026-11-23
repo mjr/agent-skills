@@ -2,7 +2,7 @@
 title: Run effects outside the database only after the commit
 impact: CRITICAL
 risk: correctness
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: on_commit, email, webhook, cache, rollback
 sources:

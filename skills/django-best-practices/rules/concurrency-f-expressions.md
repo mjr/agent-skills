@@ -2,7 +2,7 @@
 title: Increment in the database with F(), and do not save the instance again
 impact: CRITICAL
 risk: correctness
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: f-expression, counter, lost-update, returning
 sources:

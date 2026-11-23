@@ -2,7 +2,7 @@
 title: Annotate counts and sums, and never combine two multi-valued joins
 impact: HIGH
 risk: correctness
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: annotate, count, subquery, join-multiplication, n+1
 sources:

@@ -2,7 +2,7 @@
 title: Consider BRIN for large tables filtered by an append-ordered column
 impact: LOW-MEDIUM
 risk: cost
-django: ">=4.2"
+django: ">=5.2"
 database: postgresql
 tags: brin, index, timestamp, append-only, index-size
 sources:

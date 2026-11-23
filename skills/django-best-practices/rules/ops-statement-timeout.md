@@ -2,7 +2,7 @@
 title: Bound query and idle-transaction time on every connection
 impact: HIGH
 risk: availability
-django: ">=4.2"
+django: ">=5.2"
 database: postgresql
 tags: statement_timeout, idle_in_transaction_session_timeout, options, pgbouncer
 sources:

@@ -2,7 +2,7 @@
 title: Review the SQL a migration will run, against a database at the previous state
 impact: CRITICAL
 risk: availability
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: sqlmigrate, review, locks, check_migration_sql
 sources:

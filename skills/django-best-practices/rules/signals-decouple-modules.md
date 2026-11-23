@@ -2,7 +2,7 @@
 title: Define signals in the sender's module and connect module-level receivers in ready()
 impact: MEDIUM
 risk: correctness
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: signals, circular-import, apps-ready, weak-references, receivers
 sources:

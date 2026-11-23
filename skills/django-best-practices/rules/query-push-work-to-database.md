@@ -2,7 +2,7 @@
 title: Aggregate and compute in the database, not in Python loops
 impact: MEDIUM
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: aggregate, filter, extract, database-functions, grouping-sets
 sources:

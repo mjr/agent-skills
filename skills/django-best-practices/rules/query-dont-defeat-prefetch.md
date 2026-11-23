@@ -2,7 +2,7 @@
 title: Work on the prefetched objects, not on a new query
 impact: HIGH
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: prefetch, cache, n+1, related-manager
 sources:

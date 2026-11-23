@@ -2,7 +2,7 @@
 title: Claim queue rows with skip_locked so workers do not wait on each other
 impact: MEDIUM
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: postgresql
 tags: select_for_update, skip_locked, nowait, queue, workers
 sources:

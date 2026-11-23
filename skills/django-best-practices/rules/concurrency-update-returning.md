@@ -2,7 +2,7 @@
 title: Use UPDATE ... RETURNING when you need the new value in one round trip
 impact: LOW-MEDIUM
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: postgresql
 tags: returning, raw-sql, counter, round-trip
 sources:

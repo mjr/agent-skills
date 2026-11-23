@@ -2,7 +2,7 @@
 title: Keep foreign key indexes that deletes depend on
 impact: HIGH
 risk: performance
-django: ">=4.2"
+django: ">=5.2"
 database: any
 tags: foreign-key, index, delete, on_delete, cascade, protect
 sources:

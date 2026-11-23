@@ -2,7 +2,7 @@
 title: Add foreign keys to populated columns as NOT VALID, then validate
 impact: MEDIUM
 risk: availability
-django: ">=4.2"
+django: ">=5.2"
 database: postgresql
 tags: foreign-key, not-valid, validate-constraint, locks
 sources:

@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0",
+  "date": "2026-11-23",
+  "abstract": "Django and PostgreSQL practices for concurrency, transactions, migrations, signals, queries, indexes, Django REST Framework, the admin and database operations. 76 rules in 10 categories ordered by impact, each with an incorrect and a correct example, what happens, when not to apply it and how to detect it. Every testable claim is checked by an executable test against a real PostgreSQL.",
+  "verified": {
+    "django": ["5.2", "6.0", "6.1"],
+    "postgresql": ["16", "18"],
+    "python": "3.13",
+    "djangorestframework": "3.18",
+    "django_tasks_db": "0.13",
+    "django_q2": "1.11"
+  },
+  "references": [
+    "https://hakibenita.com/django-foreign-keys",
+    "https://hakibenita.com/django-concurrency",
+    "https://hakibenita.com/django-nested-transaction",
+    "https://hakibenita.com/django-reliable-signals",
+    "https://hakibenita.com/things-you-must-know-about-django-admin-as-your-app-gets-bigger",
+    "https://hakibenita.com/all-you-need-to-know-about-prefetching-in-django",
+    "https://hakibenita.com/django-rest-framework-slow",
+    "https://hakibenita.com/9-django-tips-for-working-with-databases",
+    "https://hakibenita.com/how-to-use-grouping-sets-in-django",
+    "https://hakibenita.com/automating-the-boring-stuff-in-django-using-the-check-framework",
+    "https://docs.sentry.io/product/issues/issue-details/performance-issues/n-one-queries/",
+    "https://johnnymetz.com/posts/avoiding-duplicate-objects-in-django-querysets/",
+    "https://docs.djangoproject.com/en/stable/",
+    "https://www.postgresql.org/docs/current/"
+  ]
+}
