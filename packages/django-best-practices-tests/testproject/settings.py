@@ -32,6 +32,8 @@ INSTALLED_APPS = [
     'labs.fk_naive',
     'labs.fk_safe',
     'labs.locklab',
+    'labs.columnlab',
+    'labs.nonatomic_lab',
 ]
 
 

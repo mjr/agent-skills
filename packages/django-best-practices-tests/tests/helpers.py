@@ -24,6 +24,29 @@ def index_names(table):
         return {row[0] for row in cursor.fetchall()}
 
 
+def relfilenode(table):
+    """The table's storage file. It changes when PostgreSQL rewrites the whole table."""
+    with connection.cursor() as cursor:
+        cursor.execute('SELECT relfilenode FROM pg_class WHERE oid = %s::regclass', [table])
+        return cursor.fetchone()[0]
+
+
+def column_names(table):
+    with connection.cursor() as cursor:
+        cursor.execute(
+            'SELECT column_name FROM information_schema.columns WHERE table_name = %s', [table]
+        )
+        return {row[0] for row in cursor.fetchall()}
+
+
+def applied_migrations(app):
+    from django.db.migrations.recorder import MigrationRecorder
+
+    return set(
+        MigrationRecorder(connection).migration_qs.filter(app=app).values_list('name', flat=True)
+    )
+
+
 def foreign_key_oids(table):
     """Map FK constraint name to its oid. A new oid means the constraint was re-created."""
     with connection.cursor() as cursor:
