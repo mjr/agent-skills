@@ -87,6 +87,52 @@ def test_robust_callback_does_not_stop_the_next_one():
     assert queued_tasks() == 1
 
 
+@needs_tasks_db
+@pytest.mark.rule('tx-on-commit-robust')
+def test_robust_callback_error_is_logged_not_raised(caplog):
+    with transaction.atomic():
+        transaction.on_commit(lambda: 1 / 0, robust=True)
+    assert any('on_commit' in r.getMessage() and r.exc_info for r in caplog.records)
+
+
+@pytest.mark.rule('tx-on-commit-robust')
+def test_plain_callback_error_reaches_the_caller_after_the_commit():
+    """The data is committed, yet the caller sees an exception (a 500 in a view)."""
+    with pytest.raises(ZeroDivisionError):
+        with transaction.atomic():
+            Payment.objects.create(status='paid')
+            transaction.on_commit(lambda: 1 / 0)
+    assert Payment.objects.count() == 1
+
+
+@needs_tasks_db
+@pytest.mark.rule('tx-enqueue-in-transaction-db-queue')
+def test_immediate_backend_runs_the_task_before_the_commit():
+    """The usual test backend runs tasks at enqueue time, inside the transaction.
+
+    Tests on it pass even if the code relies on the task seeing committed data, and they
+    cannot show what a worker would see; test idempotency separately.
+    """
+    from django.test import override_settings
+
+    try:
+        import django.tasks  # noqa: F401
+
+        backend = 'django.tasks.backends.immediate.ImmediateBackend'
+    except ImportError:
+        backend = 'django_tasks.backends.immediate.ImmediateBackend'
+
+    with override_settings(TASKS={'default': {'BACKEND': backend}}):
+        with pytest.raises(Boom):
+            with transaction.atomic():
+                payment = Payment.objects.create(status='paid')
+                enqueue(payment)
+                payment.refresh_from_db()
+                assert payment.status == 'processed'  # Already ran, uncommitted.
+                raise Boom
+    assert Payment.objects.count() == 0
+
+
 @needs_django_q
 @pytest.mark.rule('tx-enqueue-in-transaction-db-queue')
 def test_django_q_orm_broker_is_transactional_too():

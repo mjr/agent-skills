@@ -47,8 +47,6 @@ HAS_TASKS_DB = _installed('django_tasks_db')
 HAS_DJANGO_Q = _installed('django_q')
 
 if HAS_TASKS_DB:
-    if _installed('django_tasks'):
-        INSTALLED_APPS += ['django_tasks']
     INSTALLED_APPS += ['django_tasks_db']
     TASKS = {'default': {'BACKEND': 'django_tasks_db.DatabaseBackend', 'QUEUES': ['default']}}
 
