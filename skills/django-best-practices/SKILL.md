@@ -2,7 +2,7 @@
 name: django-best-practices
 description: Django and PostgreSQL practices, each verified by executable tests on Django 5.2, 6.0 and 6.1. Covers concurrency and locking (select_for_update, F() expressions, IntegrityError races), transactions and side effects (atomic, on_commit, database-backed task queues), safe migrations (locks, concurrent indexes, foreign key index changes, NOT NULL, column defaults, deploy compatibility), signals, query performance (N+1, select_related, prefetch_related, fetch modes, annotations, Exists), indexes, Django REST Framework serializers and pagination, the admin on large tables, and database timeouts and connections. Use when writing, reviewing or refactoring Django models, migrations, querysets, transactions, signal receivers, serializers, admin classes or database settings.
 metadata:
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # Django Best Practices
@@ -91,13 +91,18 @@ details and the test.
   default-argument lambda, `lambda pk=obj.pk: send(pk)`, which works everywhere.
   `tx-on-commit-robust`, `tx-on-commit-bind-arguments`
 - **Callbacks captured with `captureOnCommitCallbacks(execute=True)` run when the block
-  exits.** Assert their effects after it, and put `assertLogs` outside it.
-  `detect-capture-on-commit`
+  exits.** Assert their effects after it, and put `assertLogs` outside it. There, a
+  robust callback's failure is logged to `django.test`, not to `django.db.backends.base`
+  as on a real commit. `detect-capture-on-commit`, `tx-on-commit-robust`
 - **Changing `db_index` on an existing `ForeignKey`**, in either direction, makes the
   generated `AlterField` drop and re-create the constraint, re-checking every row under
   lock. `migration-fk-db-index-change`
 - **`sqlmigrate` against a database that is not at the previous migration** prints
   `(no-op)` for constraint and index changes. `migration-review-sql`
+- **`ADD CONSTRAINT ... NOT VALID` and `VALIDATE CONSTRAINT` in the same migration**
+  run in one transaction, so the validation scan happens under the `ACCESS EXCLUSIVE`
+  lock of the add and blocks even reads. Validate in the next migration.
+  `migration-set-not-null-in-steps`, `migration-fk-not-valid`
 - **`AddField(default=uuid.uuid4)`** gives every existing row the same value; a volatile
   `db_default` (`RandomUUID()`) rewrites the whole table. `migration-add-column-defaults`
 - **`read_only_fields` does not apply to fields declared on the serializer**; they need

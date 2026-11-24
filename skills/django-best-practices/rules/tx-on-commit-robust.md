@@ -39,7 +39,11 @@ with transaction.atomic():
 ```
 
 With `robust=True`, Django catches the exception, logs it with its traceback (logger
-`django.db.backends.base`) and moves on to the next callback.
+`django.db.backends.base`) and moves on to the next callback. In tests,
+`captureOnCommitCallbacks(execute=True)` runs the callbacks itself and logs robust
+failures to `django.test` instead, so `assertLogs('django.db.backends.base')` around it
+never sees them: assert on `django.test`, or better, on a logger your own callback
+writes to.
 
 **Do not pass a `functools.partial` with `robust=True` on Django 5.2 and 6.0.** Django
 builds the log message with `func.__qualname__`, which a `partial` does not have. When

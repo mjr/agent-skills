@@ -6,9 +6,10 @@ validated without blocking writes.
 """
 
 import pytest
-from django.db import connection
+from django.db import OperationalError, connection
 
 from labs.nonatomic_lab.models import Note
+from tests.helpers import Session, lock_timeout
 
 pytestmark = [pytest.mark.django_db(transaction=True), pytest.mark.rule('migration-set-not-null-in-steps')]
 
@@ -68,3 +69,40 @@ def test_validated_check_constraint_lets_set_not_null_skip_the_scan():
     messages = server_messages(['ALTER TABLE nonatomic_lab_note ALTER COLUMN tag SET NOT NULL'])
     assert any('sufficient to prove' in m for m in messages)
     assert not any('verifying table' in m for m in messages)
+
+
+ADD_CHECK = (
+    'ALTER TABLE nonatomic_lab_note ADD CONSTRAINT note_tag_not_null '
+    'CHECK (tag IS NOT NULL) NOT VALID'
+)
+VALIDATE = 'ALTER TABLE nonatomic_lab_note VALIDATE CONSTRAINT note_tag_not_null'
+
+
+def run(*statements):
+    def job(conn):
+        with conn.cursor() as cursor:
+            for statement in statements:
+                cursor.execute(statement)
+
+    return job
+
+
+def test_not_valid_and_validate_in_one_migration_keep_the_table_locked():
+    """An atomic migration runs both in one transaction: ADD CONSTRAINT's ACCESS
+    EXCLUSIVE lock is held until the commit, so the VALIDATE scan runs under it and
+    even reads wait."""
+    Note.objects.create(text='a', tag='x')
+    with Session() as migration, migration.atomic_hold(run(ADD_CHECK, VALIDATE)):
+        with pytest.raises(OperationalError, match='lock timeout'), lock_timeout(300):
+            list(Note.objects.all())
+        with pytest.raises(OperationalError, match='lock timeout'), lock_timeout(300):
+            Note.objects.create(text='b', tag='y')
+
+
+def test_validate_in_its_own_migration_lets_reads_and_writes_through():
+    Note.objects.create(text='a', tag='x')
+    run(ADD_CHECK)(connection)  # The previous migration, already committed.
+    with Session() as migration, migration.atomic_hold(run(VALIDATE)):
+        with lock_timeout(300):
+            list(Note.objects.all())
+            Note.objects.create(text='b', tag='y')

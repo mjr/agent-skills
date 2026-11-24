@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.1.1",
   "date": "2026-11-23",
   "abstract": "Django and PostgreSQL practices for concurrency, transactions, migrations, signals, queries, indexes, Django REST Framework, the admin and database operations. 76 rules in 10 categories ordered by impact, each with an incorrect and a correct example, what happens, when not to apply it and how to detect it. Every testable claim is checked by an executable test against a real PostgreSQL.",
   "verified": {

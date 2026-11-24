@@ -5,6 +5,7 @@ task commit or roll back together with the data. Deferring with on_commit leaves
 the data commits and the task can still be lost.
 """
 
+import unittest
 from functools import partial
 
 import django
@@ -149,6 +150,29 @@ def test_capture_on_commit_callbacks_raises_the_same_way_before_6_1(django_captu
     with pytest.raises(AttributeError, match='__qualname__'):
         with django_capture_on_commit_callbacks(execute=True):
             transaction.on_commit(partial(failing_send, 1), robust=True)
+
+
+@pytest.mark.rule('tx-on-commit-robust')
+@pytest.mark.django_db(transaction=False)  # TestCase-style: callbacks are only captured.
+def test_capture_on_commit_callbacks_logs_robust_failures_to_django_test(django_capture_on_commit_callbacks):
+    """On a real commit the logger is django.db.backends.base; under capture it is django.test."""
+    case = unittest.TestCase()
+    with case.assertLogs('django.test', level='ERROR') as logs:
+        with django_capture_on_commit_callbacks(execute=True):
+            transaction.on_commit(lambda pk=1: failing_send(pk), robust=True)
+    assert 'on_commit' in logs.output[0]
+    with pytest.raises(AssertionError, match='no logs'):
+        with case.assertLogs('django.db.backends.base', level='ERROR'):
+            with django_capture_on_commit_callbacks(execute=True):
+                transaction.on_commit(lambda pk=1: failing_send(pk), robust=True)
+
+
+@pytest.mark.rule('tx-on-commit-robust')
+def test_real_commit_logs_robust_failures_to_django_db_backends_base():
+    case = unittest.TestCase()
+    with case.assertLogs('django.db.backends.base', level='ERROR'):
+        with transaction.atomic():
+            transaction.on_commit(lambda pk=1: failing_send(pk), robust=True)
 
 
 @pytest.mark.rule('tx-on-commit-robust')
