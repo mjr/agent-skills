@@ -209,3 +209,14 @@ def test_partial_binds_each_item_when_registered(sent):
             transaction.on_commit(partial(notify, payment.pk))
 
     assert set(sent) == {f'payment {p.pk}' for p in payments}
+
+
+@pytest.mark.rule('tx-on-commit-bind-arguments')
+@pytest.mark.parametrize('robust', [False, True])
+def test_default_argument_lambda_binds_each_item_when_registered(sent, robust):
+    payments = [Payment.objects.create() for _ in range(3)]
+    with transaction.atomic():
+        for payment in payments:
+            transaction.on_commit(lambda pk=payment.pk: notify(pk), robust=robust)
+
+    assert set(sent) == {f'payment {p.pk}' for p in payments}

@@ -1,5 +1,5 @@
 ---
-title: Use on_commit(robust=True) for independent best-effort callbacks
+title: Use on_commit(robust=True) for best-effort callbacks, never with partial before 6.1
 impact: MEDIUM
 risk: correctness
 django: ">=5.2"
@@ -10,7 +10,7 @@ sources:
 tests: test_tx_enqueue_in_transaction.py
 ---
 
-## Use on_commit(robust=True) for independent best-effort callbacks
+## Use on_commit(robust=True) for best-effort callbacks, never with partial before 6.1
 
 Callbacks registered with `on_commit()` run in order after the commit. When one raises,
 the remaining callbacks never run, and the exception reaches the caller even though the
@@ -22,8 +22,8 @@ later callbacks (a second email, a cache invalidation, an enqueue) are silently 
 ```python
 with transaction.atomic():
     order.save()
-    transaction.on_commit(partial(send_receipt, order.pk))
-    transaction.on_commit(partial(invalidate_order_cache, order.pk))
+    transaction.on_commit(lambda pk=order.pk: send_receipt(pk))
+    transaction.on_commit(lambda pk=order.pk: invalidate_order_cache(pk))
 ```
 
 **What happens:** if `send_receipt` raises, the cache keeps stale data and the client

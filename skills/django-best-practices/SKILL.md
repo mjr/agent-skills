@@ -2,7 +2,7 @@
 name: django-best-practices
 description: Django and PostgreSQL practices, each verified by executable tests on Django 5.2, 6.0 and 6.1. Covers concurrency and locking (select_for_update, F() expressions, IntegrityError races), transactions and side effects (atomic, on_commit, database-backed task queues), safe migrations (locks, concurrent indexes, foreign key index changes, NOT NULL, column defaults, deploy compatibility), signals, query performance (N+1, select_related, prefetch_related, fetch modes, annotations, Exists), indexes, Django REST Framework serializers and pagination, the admin on large tables, and database timeouts and connections. Use when writing, reviewing or refactoring Django models, migrations, querysets, transactions, signal receivers, serializers, admin classes or database settings.
 metadata:
-  version: "1.0.1"
+  version: "1.1.0"
 ---
 
 # Django Best Practices
@@ -21,19 +21,24 @@ against a real PostgreSQL, on Django 5.2, 6.0 and 6.1 and PostgreSQL 16 and 18.
 
 ## How to use
 
-1. Find the relevant rules in the quick reference below (or run through the review
-   checklist) and read only those files: `rules/<rule-id>.md`. Each has the failure mode,
-   an Incorrect example, what happens (often the SQL), a Correct example, when not to
-   apply it, and how to detect it.
-2. Check the versions. A rule's `django:` field is the oldest supported version where
+1. Read the "Easy to get wrong" list below first; it is short and each item is a mistake
+   that capable reviewers make.
+2. Before you describe what a piece of code does at runtime, or write code in an area,
+   open the rule files for it: `rules/<rule-id>.md`, found through the quick reference or
+   the review checklist. The titles say what to do; the files hold what the titles cannot:
+   the exact failure (often the SQL), the version where behaviour changed, and the
+   exceptions. In evaluations, reviews that stated a behaviour from a title or from
+   memory got the mechanism wrong; the ones that opened the rule got it right. For a
+   review, that usually means one or two files per category the change touches.
+3. Check the versions. A rule's `django:` field is the oldest supported version where
    its Correct form was verified (5.2 for most), and `database: postgresql` marks
    PostgreSQL-only advice. Older versions may work but were not tested. Look up the
    project's Django version (`requirements*.txt`, `pyproject.toml`, `django.VERSION`)
    before applying a rule marked for a newer one.
-3. The project's own rules win. If the project's guidelines (AGENTS.md, CLAUDE.md,
+4. The project's own rules win. If the project's guidelines (AGENTS.md, CLAUDE.md,
    CONTRIBUTING, lint rules) contradict a rule here, follow the project and point out the
    conflict instead of silently applying this skill.
-4. Prefer the bundled scripts over reasoning from memory when the question is "what will
+5. Prefer the bundled scripts over reasoning from memory when the question is "what will
    this migration do" or "which indexes are wasted".
 
 ## Scripts
@@ -69,6 +74,36 @@ against a real PostgreSQL, on Django 5.2, 6.0 and 6.1 and PostgreSQL 16 and 18.
 | 8 | Django REST Framework | `drf-` | MEDIUM | performance |
 | 9 | Admin at scale | `admin-` | MEDIUM | performance |
 | 10 | Database operations | `ops-` | MEDIUM | availability |
+
+## Easy to get wrong
+
+Each of these was verified on Django 5.2, 6.0 and 6.1 with PostgreSQL; the rule has the
+details and the test.
+
+- **A second `save()` after assigning `F()`** loses concurrent updates on Django 6.0+:
+  `save()` uses `RETURNING` and puts the new integer back, so the next save writes a
+  literal. It does not count twice (that is 5.2 behaviour). `concurrency-f-expressions`
+- **`Prefetch(to_attr=...)` with a name already used** by a field, relation or property
+  raises no error: the prefetch is skipped, and a property runs its own query per row.
+  `query-prefetch-object`
+- **`on_commit(partial(...), robust=True)`** raises `AttributeError` when the callback
+  fails on Django 5.2 and 6.0, instead of logging it. Bind arguments with a
+  default-argument lambda, `lambda pk=obj.pk: send(pk)`, which works everywhere.
+  `tx-on-commit-robust`, `tx-on-commit-bind-arguments`
+- **Callbacks captured with `captureOnCommitCallbacks(execute=True)` run when the block
+  exits.** Assert their effects after it, and put `assertLogs` outside it.
+  `detect-capture-on-commit`
+- **Changing `db_index` on an existing `ForeignKey`**, in either direction, makes the
+  generated `AlterField` drop and re-create the constraint, re-checking every row under
+  lock. `migration-fk-db-index-change`
+- **`sqlmigrate` against a database that is not at the previous migration** prints
+  `(no-op)` for constraint and index changes. `migration-review-sql`
+- **`AddField(default=uuid.uuid4)`** gives every existing row the same value; a volatile
+  `db_default` (`RandomUUID()`) rewrites the whole table. `migration-add-column-defaults`
+- **`read_only_fields` does not apply to fields declared on the serializer**; they need
+  `read_only=True` themselves. `drf-read-only-fields`
+- **Callables in `list_display` do not get the automatic `select_related`** that plain
+  foreign key columns get. `admin-list-select-related`
 
 ## Review checklist
 
@@ -137,7 +172,7 @@ note apply to Django 5.2+ on any database.
 - `tx-keep-short` [HIGH] Keep network calls and slow work out of transactions
 - `tx-durable-entry-points` [MEDIUM] Mark transactions that must commit on exit with durable=True
 - `tx-on-commit-bind-arguments` [MEDIUM] Bind callback arguments when registering on_commit, not when it runs
-- `tx-on-commit-robust` [MEDIUM] Use on_commit(robust=True) for independent best-effort callbacks
+- `tx-on-commit-robust` [MEDIUM] Use on_commit(robust=True) for best-effort callbacks, never with partial before 6.1
 
 ### 3. Safe migrations (`migration-`)
 

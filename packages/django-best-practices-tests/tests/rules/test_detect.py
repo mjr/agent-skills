@@ -4,6 +4,7 @@ import ast
 import inspect
 import logging
 import textwrap
+import unittest
 from functools import partial
 
 import pytest
@@ -81,6 +82,41 @@ def test_capturing_runs_them(django_capture_on_commit_callbacks):
             transaction.on_commit(lambda: ran.append('callback'))
     assert ran == ['callback']
     assert len(callbacks) == 1
+
+
+@pytest.mark.django_db
+@pytest.mark.rule('detect-capture-on-commit')
+def test_captured_callbacks_run_only_when_the_block_exits(django_capture_on_commit_callbacks):
+    ran = []
+    with django_capture_on_commit_callbacks(execute=True):
+        transaction.on_commit(lambda: ran.append('callback'))
+        assert ran == []  # Still inside: nothing has run yet.
+    assert ran == ['callback']
+
+
+def log_failure():
+    logging.getLogger('shop.email').error('email failed')
+
+
+@pytest.mark.django_db
+@pytest.mark.rule('detect-capture-on-commit')
+def test_assert_logs_inside_the_capture_block_sees_nothing(django_capture_on_commit_callbacks):
+    """assertLogs closes before the callbacks run, so the test always fails."""
+    case = unittest.TestCase()
+    with pytest.raises(AssertionError, match='no logs'):
+        with django_capture_on_commit_callbacks(execute=True):
+            with case.assertLogs('shop.email', level='ERROR'):
+                transaction.on_commit(log_failure)
+
+
+@pytest.mark.django_db
+@pytest.mark.rule('detect-capture-on-commit')
+def test_assert_logs_around_the_capture_block_sees_the_callback(django_capture_on_commit_callbacks):
+    case = unittest.TestCase()
+    with case.assertLogs('shop.email', level='ERROR') as logs:
+        with django_capture_on_commit_callbacks(execute=True):
+            transaction.on_commit(log_failure)
+    assert logs.output == ['ERROR:shop.email:email failed']
 
 
 # detect-explain

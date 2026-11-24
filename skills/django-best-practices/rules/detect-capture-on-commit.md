@@ -35,6 +35,17 @@ def test_pay_sends_receipt(self):
     self.assertEqual(len(mail.outbox), 1)
 ```
 
+The callbacks run when the `with` block exits, not when they are registered. Assert their
+effects after the block, and put context managers that observe them outside it:
+`assertLogs` (or `caplog` checks) nested inside the capture block has already closed when
+the callbacks run, so the test always fails.
+
+```python
+with self.assertLogs('shop.email', level='ERROR'):
+    with self.captureOnCommitCallbacks(execute=True):
+        pay(self.payment)  # Its callback logs an error when the email fails.
+```
+
 With pytest-django, use the `django_capture_on_commit_callbacks` fixture the same way.
 `TransactionTestCase` (`django_db(transaction=True)`) commits for real and runs the
 callbacks, at the cost of slower tests.

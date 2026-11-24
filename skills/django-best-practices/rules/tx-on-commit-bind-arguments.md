@@ -4,7 +4,7 @@ impact: MEDIUM
 risk: correctness
 django: ">=5.2"
 database: any
-tags: on_commit, lambda, late-binding, partial
+tags: on_commit, lambda, late-binding, partial, default-argument
 sources:
   - https://docs.python.org/3/faq/programming.html#why-do-lambdas-defined-in-a-loop-with-different-values-all-return-the-same-result
 tests: test_tx_side_effects.py
@@ -31,19 +31,18 @@ others get none.
 **Correct (bind the value at registration):**
 
 ```python
-from functools import partial
-
 with transaction.atomic():
     for payment in payments:
         payment.mark_paid()
-        transaction.on_commit(partial(send_receipt, payment.pk))
+        transaction.on_commit(lambda pk=payment.pk: send_receipt(pk))
 ```
 
-`partial` evaluates `payment.pk` immediately. A default argument
-(`lambda pk=payment.pk: send_receipt(pk)`) works too but is easier to break in review.
-With `robust=True` on Django 5.2 and 6.0, use the default-argument lambda: a failing
-`partial` makes the robust handler raise `AttributeError` instead of logging (see
-`tx-on-commit-robust`).
+The default argument is evaluated when the lambda is created, so each callback keeps
+its own `pk`. Keep the `pk=payment.pk` part when editing: without it the bug comes back.
+`functools.partial(send_receipt, payment.pk)` binds the value too, but do not combine it
+with `robust=True` on Django 5.2 and 6.0: when it fails, the robust handler raises
+`AttributeError` instead of logging (see `tx-on-commit-robust`). The lambda works with
+and without `robust=True` on every version.
 Pass primary keys or plain values rather than instances: an instance changed later in the
 transaction is seen in its final state by the callback.
 

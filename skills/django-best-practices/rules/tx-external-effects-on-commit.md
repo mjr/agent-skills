@@ -34,16 +34,16 @@ the client keeps an email for a payment that does not exist.
 **Correct (defer the effect to the commit):**
 
 ```python
-from functools import partial
-
 with transaction.atomic():
     payment.status = 'paid'
     payment.save(update_fields=['status'])
-    transaction.on_commit(partial(send_receipt, payment.pk))
+    transaction.on_commit(lambda pk=payment.pk: send_receipt(pk))
     ledger.record(payment)
 ```
 
 The callback runs after the outermost transaction commits and is discarded on rollback.
+The default argument binds the value now (see `tx-on-commit-bind-arguments`); add
+`robust=True` when a failure must not reach the caller (see `tx-on-commit-robust`).
 Outside any transaction, `on_commit()` runs the callback immediately. Invalidate caches
 the same way: done before the commit, another request can repopulate the cache with the
 old data before the new data is visible.

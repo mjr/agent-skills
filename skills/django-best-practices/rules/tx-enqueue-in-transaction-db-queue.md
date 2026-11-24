@@ -25,7 +25,7 @@ cannot see it before the commit. This is the transactional outbox pattern.
 with transaction.atomic():
     payment.status = 'paid'
     payment.save(update_fields=['status'])
-    transaction.on_commit(partial(fulfil_order.enqueue, payment.pk))
+    transaction.on_commit(lambda pk=payment.pk: fulfil_order.enqueue(pk))
 ```
 
 **What happens:** the payment is committed; any failure before the callback runs (an

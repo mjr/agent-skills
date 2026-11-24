@@ -46,7 +46,7 @@ def pay(payment):
     with transaction.atomic():
         payment.status = 'paid'
         payment.save(update_fields=['status'])
-        transaction.on_commit(partial(notify_paid, payment.pk))
+        transaction.on_commit(lambda pk=payment.pk: notify_paid(pk))
 ```
 
 `on_commit()` callbacks wait for the outermost commit, whatever the nesting.

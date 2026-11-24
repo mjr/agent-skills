@@ -132,6 +132,15 @@ def test_to_attr_that_reuses_a_name_silently_loses_the_prefetch(catalog, taken):
     assert not isinstance(getattr(product, taken), list)  # No error, and no tags either.
 
 
+@pytest.mark.rule('query-prefetch-object')
+def test_to_attr_named_like_a_property_is_skipped_and_the_property_queries_per_row(catalog):
+    recent = Prefetch('tags', queryset=Tag.objects.order_by('-pk'), to_attr='recent_tags')
+    count, products = queries(lambda: list(Product.objects.prefetch_related(recent)))
+    assert count == len(products) + 1  # No prefetch query: hasattr() ran the property per row.
+    count, _ = queries(lambda: [p.recent_tags for p in products])
+    assert count == len(products)  # Reading it runs the property again, once per product.
+
+
 # query-dont-defeat-prefetch
 
 

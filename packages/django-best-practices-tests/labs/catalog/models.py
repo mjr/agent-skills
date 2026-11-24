@@ -26,6 +26,10 @@ class Product(models.Model):
     )
     hits = models.PositiveIntegerField(default=0)
 
+    @property
+    def recent_tags(self):
+        return list(self.tags.order_by('-pk')[:3])
+
 
 class Tag(models.Model):
     name = models.CharField(max_length=30)
